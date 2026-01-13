@@ -1161,6 +1161,20 @@ target_link_libraries(love_timer PUBLIC
 )
 
 #
+# love.tensorlogic
+#
+
+add_library(love_tensorlogic STATIC
+	src/modules/tensorlogic/TensorLogic.cpp
+	src/modules/tensorlogic/TensorLogic.h
+	src/modules/tensorlogic/wrap_TensorLogic.cpp
+	src/modules/tensorlogic/wrap_TensorLogic.h
+)
+target_link_libraries(love_tensorlogic PUBLIC
+	lovedep::Lua
+)
+
+#
 # love.touch
 #
 
@@ -1929,6 +1943,7 @@ set(LIBLOVE_DEPENDENCIES
 	love_system
 	love_thread
 	love_timer
+	love_tensorlogic
 	love_touch
 	love_video
 	love_window
