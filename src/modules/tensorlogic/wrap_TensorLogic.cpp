@@ -112,7 +112,8 @@ int w_einsum(lua_State *L)
 	{
 		lua_rawgeti(L, 2, i);
 		Tensor *t = luax_checktensor(L, -1);
-		tensors.push_back(std::shared_ptr<Tensor>(t));
+		t->retain(); // Retain for this operation
+		tensors.push_back(std::shared_ptr<Tensor>(t, [](Tensor* p) { p->release(); })); // Custom deleter
 		lua_pop(L, 1);
 	}
 	
@@ -127,7 +128,12 @@ int w_logicalAnd(lua_State *L)
 	Tensor *a = luax_checktensor(L, 1);
 	Tensor *b = luax_checktensor(L, 2);
 	
-	auto result = instance()->logicalAnd(std::shared_ptr<Tensor>(a), std::shared_ptr<Tensor>(b));
+	a->retain();
+	b->retain();
+	auto result = instance()->logicalAnd(
+		std::shared_ptr<Tensor>(a, [](Tensor* p) { p->release(); }),
+		std::shared_ptr<Tensor>(b, [](Tensor* p) { p->release(); })
+	);
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;
@@ -138,7 +144,12 @@ int w_logicalOr(lua_State *L)
 	Tensor *a = luax_checktensor(L, 1);
 	Tensor *b = luax_checktensor(L, 2);
 	
-	auto result = instance()->logicalOr(std::shared_ptr<Tensor>(a), std::shared_ptr<Tensor>(b));
+	a->retain();
+	b->retain();
+	auto result = instance()->logicalOr(
+		std::shared_ptr<Tensor>(a, [](Tensor* p) { p->release(); }),
+		std::shared_ptr<Tensor>(b, [](Tensor* p) { p->release(); })
+	);
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;
@@ -148,7 +159,10 @@ int w_logicalNot(lua_State *L)
 {
 	Tensor *a = luax_checktensor(L, 1);
 	
-	auto result = instance()->logicalNot(std::shared_ptr<Tensor>(a));
+	a->retain();
+	auto result = instance()->logicalNot(
+		std::shared_ptr<Tensor>(a, [](Tensor* p) { p->release(); })
+	);
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;
@@ -230,7 +244,8 @@ int w_Tensor_add(lua_State *L)
 	Tensor *t = luax_checktensor(L, 1);
 	Tensor *other = luax_checktensor(L, 2);
 	
-	auto result = t->add(std::shared_ptr<Tensor>(other));
+	other->retain();
+	auto result = t->add(std::shared_ptr<Tensor>(other, [](Tensor* p) { p->release(); }));
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;
@@ -241,7 +256,8 @@ int w_Tensor_multiply(lua_State *L)
 	Tensor *t = luax_checktensor(L, 1);
 	Tensor *other = luax_checktensor(L, 2);
 	
-	auto result = t->multiply(std::shared_ptr<Tensor>(other));
+	other->retain();
+	auto result = t->multiply(std::shared_ptr<Tensor>(other, [](Tensor* p) { p->release(); }));
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;
@@ -252,7 +268,8 @@ int w_Tensor_matmul(lua_State *L)
 	Tensor *t = luax_checktensor(L, 1);
 	Tensor *other = luax_checktensor(L, 2);
 	
-	auto result = t->matmul(std::shared_ptr<Tensor>(other));
+	other->retain();
+	auto result = t->matmul(std::shared_ptr<Tensor>(other, [](Tensor* p) { p->release(); }));
 	luax_pushtype(L, result.get());
 	result->retain();
 	return 1;

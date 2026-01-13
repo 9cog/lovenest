@@ -78,8 +78,14 @@ function love.load()
 	-- Example 4: Knowledge Graph Representation
 	print("4. Knowledge Graph as Tensor Relations:")
 	print("Representing 'is-a' relationships:")
-	-- Entities: Dog, Cat, Animal, Mammal
+	-- Entities: Dog, Cat, Animal, Mammal (indices 0, 1, 2, 3 in C; 1-4 in Lua)
 	-- Relations represented as adjacency matrix
+	-- Matrix layout (row-major ordering):
+	--     Dog(0) Cat(1) Animal(2) Mammal(3)
+	-- Dog    F      F       T         T      <- row 0, indices 1-4
+	-- Cat    F      F       T         T      <- row 1, indices 5-8
+	-- Anim   F      F       F         F      <- row 2, indices 9-12
+	-- Mamm   F      F       T         F      <- row 3, indices 13-16
 	local relations = love.tensorlogic.newBoolTensor({4, 4}, {
 		-- Dog  Cat  Animal Mammal
 		false, false, true,  true,   -- Dog is-a Animal, Dog is-a Mammal
@@ -88,8 +94,19 @@ function love.load()
 		false, false, true,  false   -- Mammal is-a Animal
 	})
 	print("  Knowledge graph adjacency matrix:", tostring(relations))
-	print("  Dog is Animal?", relations:get(3) == 1)  -- [0, 2] in matrix
-	print("  Cat is Mammal?", relations:get(8) == 1)  -- [1, 3] in matrix
+	
+	-- Helper function to compute matrix index: row * cols + col + 1 (Lua is 1-indexed)
+	local function matrixIndex(row, col, cols)
+		return row * cols + col + 1
+	end
+	
+	-- Query: Is Dog(row=0) an Animal(col=2)?
+	local dog_is_animal_idx = matrixIndex(0, 2, 4)  -- = 3
+	print(string.format("  Dog is Animal? (index %d) %s", dog_is_animal_idx, relations:get(dog_is_animal_idx) == 1))
+	
+	-- Query: Is Cat(row=1) a Mammal(col=3)?
+	local cat_is_mammal_idx = matrixIndex(1, 3, 4)  -- = 8
+	print(string.format("  Cat is Mammal? (index %d) %s", cat_is_mammal_idx, relations:get(cat_is_mammal_idx) == 1))
 	print()
 	
 	-- Example 5: Einstein Summation (Advanced Tensor Logic)
