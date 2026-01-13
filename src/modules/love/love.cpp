@@ -156,6 +156,7 @@ extern "C"
 #if defined(LOVE_ENABLE_TIMER)
 	extern int luaopen_love_timer(lua_State*);
 #endif
+	extern int luaopen_love_tensorlogic(lua_State*);
 #if defined(LOVE_ENABLE_THREAD)
 	extern int luaopen_love_thread(lua_State*);
 #endif
@@ -231,6 +232,7 @@ static const luaL_Reg modules[] = {
 #if defined(LOVE_ENABLE_TIMER)
 	{ "love.timer", luaopen_love_timer },
 #endif
+	{ "love.tensorlogic", luaopen_love_tensorlogic },
 #if defined(LOVE_ENABLE_TOUCH)
 	{ "love.touch", luaopen_love_touch },
 #endif

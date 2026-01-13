@@ -59,6 +59,7 @@ public:
 		M_TOUCH,
 		M_VIDEO,
 		M_WINDOW,
+		M_TENSORLOGIC,
 		M_MAX_ENUM
 	};
 
